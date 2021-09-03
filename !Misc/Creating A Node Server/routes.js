@@ -16,6 +16,10 @@ const requestHandler = (req, res) => {
   }
   if (url === "/message" && method === "POST") {
     const body = [];
+    // res.setHeader("refresh", "2;url=/");
+    res.setHeader("Content-Type", "text/html");
+    res.write(fs.readFileSync("./index.html", "utf-8"));
+    res.end();
     req.on("data", (chunk) => {
       body.push(chunk);
     });
@@ -29,12 +33,6 @@ const requestHandler = (req, res) => {
       });
     });
   }
-  res.setHeader("Content-Type", "text/html");
-  res.write("<html>");
-  res.write("<head><title>Server</title></head>");
-  res.write("<body><h1>Hello Written From Node.js Server</h1></body>");
-  res.write("</html>");
-  res.end();
 };
 
 module.exports = requestHandler;
