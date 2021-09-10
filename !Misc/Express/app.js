@@ -2,38 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 
-app.use(bodyParser.urlencoded());
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
-const checkAdmin = (req, res, next) => {
-  if (req.query.admin === "true") {
-    res.status(200);
-    // res.json(req.query);
-    next();
-  } else {
-    res.send("You Aint Admin LMAO");
-  }
-};
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded());
 
-const sendRes = (req, res) => {
-  res.json({ query: req.query });
-};
+app.use(adminRoutes);
+app.use(shopRoutes);
 
-app.use(express.static("./public"));
+// app.use("/", checkAdmin, sendRes);
 
-app.use("/", checkAdmin, sendRes);
-
-app.use("/addProduct", (req, res, next) => {
-  console.log("Add Product Page");
-});
-
-app.use("/product", (req, res, next) => {
-  console.log(req.body);
-  res.redirect("/");
-});
-
-// app.use("/", (req, res, next) => {
-//   res.send("<h1>Welcome To Home</h1>");
-// });
+// const sendRes = (req, res) => {
+//   res.json({ query: req.query });
+// };
 
 app.listen(3000);
 
