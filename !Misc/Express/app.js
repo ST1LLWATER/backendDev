@@ -10,6 +10,9 @@ app.use(express.urlencoded());
 
 app.use(adminRoutes);
 app.use(shopRoutes);
+app.use((req, res) => {
+  res.status(404).send("<h1>Error 404 Lmao Ded Brick Not Found</h1>");
+});
 
 // app.use("/", checkAdmin, sendRes);
 
