@@ -1,4 +1,5 @@
 const express = require("express");
+const { appendFile } = require("fs");
 const path = require("path");
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const checkAdmin = (req, res, next) => {
 
 router.get("/add-product", checkAdmin, (req, res, next) => {
   res.sendFile(path.join(__dirname, "../", "views", "add-product.html"));
+  // res.sendFile("../views/add-product.html");
   console.log("Add Product Page");
 });
 

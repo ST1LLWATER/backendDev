@@ -14,6 +14,7 @@ const requestHandler = (req, res) => {
     res.write("</html>");
     return res.end();
   }
+
   if (url === "/message" && method === "POST") {
     const body = [];
     // res.setHeader("refresh", "2;url=/");
