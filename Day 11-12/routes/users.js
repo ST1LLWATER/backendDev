@@ -10,7 +10,7 @@ const pool = new Pool({
   port: "5432",
 });
 /* GET users listing. */
-router.get("/", function (req, res, next) {
+router.get("/users", function (req, res, next) {
   pool.query("SELECT * FROM 'Users'", (err, res) => {
     if (err) {
       console.log("Error Querying: ", err);
