@@ -11,7 +11,7 @@ const pool = new Pool({
 });
 /* GET users listing. */
 router.get("/users", function (req, res, next) {
-  pool.query("SELECT * FROM 'Users'", (err, res) => {
+  pool.query('SELECT * FROM "Users"', (err, res) => {
     if (err) {
       console.log("Error Querying: ", err);
     } else {
