@@ -1,41 +1,47 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require("express");
+const { sequelize, User } = require("./models");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
+const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.post("/users", async (req, res) => {
+  const { name, email, role } = req.body;
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+  try {
+    const user = await User.create({ name, email, role });
+
+    return res.json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+app.get("/users", async (req, res) => {
+  try {
+    const users = await User.findAll();
+    return res.json(users);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something Went Wrong" });
+  }
 });
 
-module.exports = app;
+app.get("/users/:uuid", async (req, res) => {
+  const uuid = req.params.uuid;
+  try {
+    const user = await User.findOne({
+      where: { uuid },
+    });
+    return res.json(user);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something Went Wrong" });
+  }
+});
+
+app.listen({ port: 5000 }, async () => {
+  console.log("Server Running On Port 5000");
+  await sequelize.authenticate();
+  console.log("Database Connected");
+});
