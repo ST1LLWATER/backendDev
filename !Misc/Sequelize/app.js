@@ -56,12 +56,33 @@ app.post("/posts", async (req, res) => {
 // { include: [User] }
 app.get("/posts", async (req, res) => {
   try {
-    const posts = await Post.findAll({
-      include: [{ model: User }],
+    const users = await User.findAll({
+      include: "posts",
     });
-    const users = await User.findAll();
+    // const users = await User.findAll();
 
-    return res.json({ post });
+    return res.json({ users });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+});
+
+app.get("/user-posts/:uuid", async (req, res) => {
+  const uuid = req.params.uuid;
+
+  try {
+    const user = await User.findOne({
+      where: { uuid },
+    });
+
+    const userId = user.id;
+
+    const posts = await Post.findAll({
+      where: { userId },
+    });
+
+    return res.json(posts);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
