@@ -40,6 +40,55 @@ app.get("/users/:uuid", async (req, res) => {
   }
 });
 
+app.delete("/users/:uuid", async (req, res) => {
+  const uuid = req.params.uuid;
+  try {
+    const user = await User.findOne({
+      where: { uuid },
+    });
+
+    await user.destroy();
+
+    return res.json({ message: "User Deleted" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something Went Wrong" });
+  }
+});
+
+app.put("/users/:uuid", async (req, res) => {
+  const uuid = req.params.uuid;
+  let { name, email, role } = req.body;
+  try {
+    const user = await User.findOne({
+      where: { uuid },
+    });
+
+    if (!name) {
+      name = user.name;
+    }
+
+    if (!email) {
+      email = user.email;
+    }
+
+    if (!role) {
+      role = user.role;
+    }
+
+    user.name = name;
+    user.email = email;
+    user.role = role;
+
+    await user.save();
+
+    return res.json(user);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something Went Wrong" });
+  }
+});
+
 app.post("/posts", async (req, res) => {
   const { userUuid, body } = req.body;
   try {
@@ -74,15 +123,10 @@ app.get("/user-posts/:uuid", async (req, res) => {
   try {
     const user = await User.findOne({
       where: { uuid },
+      include: "posts",
     });
 
-    const userId = user.id;
-
-    const posts = await Post.findAll({
-      where: { userId },
-    });
-
-    return res.json(posts);
+    return res.json(user.posts);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
