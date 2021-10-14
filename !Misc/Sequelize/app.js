@@ -105,8 +105,8 @@ app.post("/posts", async (req, res) => {
 // { include: [User] }
 app.get("/posts", async (req, res) => {
   try {
-    const users = await User.findAll({
-      include: "posts",
+    const users = await Post.findAll({
+      include: "users",
     });
     // const users = await User.findAll();
 
