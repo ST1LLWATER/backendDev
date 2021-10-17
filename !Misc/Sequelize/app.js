@@ -1,93 +1,15 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
+const fs = require("fs");
 const { sequelize, User, Post } = require("./models");
+const userRoutes = require("./routes/user");
 
 const app = express();
+
 app.use(express.json());
+app.use(cookieParser());
 
-app.post("/users", async (req, res) => {
-  const { name, email, role } = req.body;
-
-  try {
-    const user = await User.create({ name, email, role });
-
-    return res.json(user);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
-  }
-});
-
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.findAll();
-    return res.json(users);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something Went Wrong" });
-  }
-});
-
-app.get("/users/:uuid", async (req, res) => {
-  const uuid = req.params.uuid;
-  try {
-    const user = await User.findOne({
-      where: { uuid },
-    });
-    return res.json(user);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something Went Wrong" });
-  }
-});
-
-app.delete("/users/:uuid", async (req, res) => {
-  const uuid = req.params.uuid;
-  try {
-    const user = await User.findOne({
-      where: { uuid },
-    });
-
-    await user.destroy();
-
-    return res.json({ message: "User Deleted" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something Went Wrong" });
-  }
-});
-
-app.put("/users/:uuid", async (req, res) => {
-  const uuid = req.params.uuid;
-  let { name, email, role } = req.body;
-  try {
-    const user = await User.findOne({
-      where: { uuid },
-    });
-
-    if (!name) {
-      name = user.name;
-    }
-
-    if (!email) {
-      email = user.email;
-    }
-
-    if (!role) {
-      role = user.role;
-    }
-
-    user.name = name;
-    user.email = email;
-    user.role = role;
-
-    await user.save();
-
-    return res.json(user);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Something Went Wrong" });
-  }
-});
+app.use("/user", userRoutes);
 
 app.post("/posts", async (req, res) => {
   const { userUuid, body } = req.body;

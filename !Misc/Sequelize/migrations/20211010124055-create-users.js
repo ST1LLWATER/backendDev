@@ -12,7 +12,11 @@ module.exports = {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      name: {
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      lastName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -20,9 +24,14 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      role: {
+      password: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "user",
       },
       createdAt: {
         allowNull: false,

@@ -13,7 +13,14 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     toJSON() {
-      return { ...this.get(), id: undefined };
+      return {
+        ...this.get(),
+        id: undefined,
+        password: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
+        role: undefined,
+      };
     }
   }
   User.init(
@@ -23,7 +30,15 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
 
-      name: {
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "User Must Have A Name" },
+          notEmpty: { msg: "Name Cannot Be Empty" },
+        },
+      },
+      lastName: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -34,19 +49,25 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           notNull: { msg: "User Must Have An Email" },
           notEmpty: { msg: "Email Cannot Be Empty" },
           isEmail: { msg: "Must Be A Valid Email" },
         },
       },
-      role: {
+      password: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notNull: { msg: "User Must Have A Role" },
-          notEmpty: { msg: "Role Cannot Be Empty" },
+          notNull: { msg: "Password Required" },
+          notEmpty: { msg: "Password Cannot Be Empty" },
         },
+      },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "user",
       },
     },
     {
