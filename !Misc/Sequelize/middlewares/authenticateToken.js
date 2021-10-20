@@ -1,19 +1,24 @@
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
-function authenticateToken(req, res, next) {
-  console.log(req.cookies);
-  const token = req.cookies.access_token;
+const authenticateToken = async (req, res, next) => {
+  // const token = req.cookies.access_token;
+  const token =
+    req.body.token || req.query.token || req.headers["x-access-token"];
   if (!token) {
+    console.log("Token Not Found");
     return res.sendStatus(403);
   }
+
   try {
     const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     req.userId = data.userId;
     req.userRole = data.role;
     return next();
-  } catch {
+  } catch (err) {
+    console.log("Error: ", err.message);
     return res.sendStatus(403);
   }
-}
+};
 
 module.exports = authenticateToken;

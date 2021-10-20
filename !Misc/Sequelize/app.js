@@ -1,15 +1,30 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const fs = require("fs");
+const path = require("path");
+const ejsLayouts = require("express-ejs-layouts");
 const { sequelize, User, Post } = require("./models");
 const userRoutes = require("./routes/user");
 
 const app = express();
 
+app.set("view engine", "ejs");
+
+app.use(ejsLayouts);
+// app.use(express.static(path.join(__dirname, "public")));
+app.use("/public", express.static(path.join(__dirname, "public")));
+
 app.use(express.json());
 app.use(cookieParser());
 
 app.use("/user", userRoutes);
+
+app.get("/home", (req, res) => {
+  let locals = {
+    title: "Home",
+  };
+  res.render("home", locals);
+});
 
 app.post("/posts", async (req, res) => {
   const { userUuid, body } = req.body;

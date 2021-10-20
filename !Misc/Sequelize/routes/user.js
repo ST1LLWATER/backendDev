@@ -62,6 +62,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.get("/register", (req, res) => {
+  let locals = {
+    title: "Register",
+  };
+  res.render("register", locals);
+});
+
 router.post("/login", async (req, res) => {
   // Our login logic starts here
   try {
@@ -75,27 +82,41 @@ router.post("/login", async (req, res) => {
     // Validate if user exist in our database
     const user = await User.findOne({ where: { email } });
 
+    if (!user) {
+      return res.send("Email Not Found, Please Register");
+    }
+
     if (user && (await bcrypt.compare(password, user.password))) {
       // Create token
       const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.TOKEN_KEY,
+        { userId: user.id, role: user.role, name: user.firstName, email },
+        process.env.ACCESS_TOKEN_SECRET,
         {
           expiresIn: "2h",
         }
       );
 
-      // save user token
-      user.token = token;
-
-      // user
-      res.status(200).json(user);
+      return res
+        .cookie("access_token", token, {
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+          secure: true,
+          sameSite: true,
+        })
+        .status(200)
+        .json({ message: "Login Successful", token, user });
     }
     res.status(400).send("Invalid Credentials");
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   }
-  // Our register logic ends here
+});
+
+router.get("/logout", authenticateToken, (req, res) => {
+  return res
+    .clearCookie("access_token")
+    .status(200)
+    .json({ message: "Successfully Logged Out" });
 });
 
 router.get("/showall", authenticateToken, async (req, res) => {
